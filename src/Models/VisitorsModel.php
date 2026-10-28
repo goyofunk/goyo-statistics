@@ -8,7 +8,6 @@ use Goyo_Statistics\Components\DateRange;
 use Goyo_Statistics\Decorators\ReferralDecorator;
 use Goyo_Statistics\Decorators\VisitorDecorator;
 use GOYO_STATISTICS\Helper;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
 use Goyo_Statistics\Utils\Query;
 
 class VisitorsModel extends BaseModel
@@ -1172,7 +1171,7 @@ class VisitorsModel extends BaseModel
 
     public function getVisitorsWithIncompleteLocation($returnCount = false)
     {
-        $privateCountry = GeolocationFactory::getProviderInstance()->getPrivateCountryCode();
+        $privateCountry = (\GOYO_STATISTICS\Option::get('private_country_code') ?: '000');
 
         // Determine the select fields based on the returnCount parameter
         $selectFields = $returnCount ? 'COUNT(*)' : ['ID'];

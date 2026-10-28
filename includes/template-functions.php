@@ -10,7 +10,6 @@ use Goyo_Statistics\Models\VisitorsModel;
 use GOYO_STATISTICS\Pages;
 use Goyo_Statistics\Service\Analytics\DeviceDetection\DeviceHelper;
 use Goyo_Statistics\Service\Analytics\DeviceDetection\UserAgent;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
 use Goyo_Statistics\Service\Admin\PrivacyAudit\Faqs\RequireConsent;
 use GOYO_STATISTICS\TimeZone;
 use GOYO_STATISTICS\User;
@@ -58,27 +57,8 @@ function goyo_statistics_get_current_user_data()
  */
 function goyo_statistics_get_user_location($ip = false)
 {
-    $ip   = ($ip === false ? goyo_statistics_get_user_ip() : $ip);
-    $data = array(
-        'country' => '',
-        'city'    => '',
-    );
-
-    // Get the location
-    $location = GeolocationFactory::getLocation($ip);
-    $country  = $location['country'];
-
-    $data['country'] = array(
-        'code' => $location,
-        'name' => Country::getName($country),
-        'flag' => Country::flag($country)
-    );
-
-    // Get User City
-    $data['city'] = $location['city'];
-
-    return $data;
-}
+    return ['country' => ['code' => '000', 'name' => '', 'flag' => ''], 'city' => ''];
+    }
 
 /**
  * Get Current Users online

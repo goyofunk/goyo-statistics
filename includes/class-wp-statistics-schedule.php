@@ -7,7 +7,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 use Goyo_Statistics\Utils\Request;
 use Goyo_Statistics\Components\Event;
 use Goyo_Statistics\Components\DateTime;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
 use Goyo_Statistics\Service\Admin\LicenseManagement\ApiCommunicator;
 use Goyo_Statistics\Service\Admin\LicenseManagement\LicenseHelper;
 use Goyo_Statistics\Service\Admin\LicenseManagement\LicenseMigration;
@@ -89,27 +88,6 @@ class Schedule
         // Remove license migration schedule if licenses have been migrated before
         if (wp_next_scheduled('goyo_statistics_licenses_hook') && LicenseMigration::hasLicensesAlreadyMigrated()) {
             wp_unschedule_event(wp_next_scheduled('goyo_statistics_licenses_hook'), 'goyo_statistics_licenses_hook');
-        }
-
-        // Add the GeoIP update schedule if it doesn't exist and it should be.
-        if (!wp_next_scheduled('goyo_statistics_geoip_hook') && Option::get('schedule_geoip')) {
-            wp_schedule_event(self::getSchedules()['random_monthly']['next_schedule'], 'random_monthly', 'goyo_statistics_geoip_hook');
-        }
-
-        // Remove the GeoIP update schedule if it does exist and it should shouldn't.
-        if (wp_next_scheduled('goyo_statistics_geoip_hook') && (!Option::get('schedule_geoip'))) {
-            wp_unschedule_event(wp_next_scheduled('goyo_statistics_geoip_hook'), 'goyo_statistics_geoip_hook');
-        }
-
-        $locationDetection = Option::get('geoip_location_detection_method', 'maxmind');
-
-        if (wp_next_scheduled('goyo_statistics_geoip_hook') && 'cf' === $locationDetection) {
-            wp_unschedule_event(wp_next_scheduled('goyo_statistics_geoip_hook'), 'goyo_statistics_geoip_hook');
-        }
-
-        //Construct Event
-        if (in_array($locationDetection, ['maxmind', 'dbip'], true)) {
-            add_action('goyo_statistics_geoip_hook', array($this, 'geoip_event'));
         }
 
         add_action('goyo_statistics_report_hook', array($this, 'send_report'));
@@ -245,10 +223,7 @@ class Schedule
     /**
      * Updates the GeoIP database from MaxMind.
      */
-    public function geoip_event()
-    {
-        GeolocationFactory::downloadDatabase();
-    }
+
 
     /**
      * Purges old records on a schedule based on age.

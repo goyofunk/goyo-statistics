@@ -151,7 +151,6 @@ final class Goyo_Statistics
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-user-online.php';
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-user-agent.php';
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-ip.php';
-        require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-geoip.php';
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-pages.php';
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-visitor.php';
         require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-historical.php';

@@ -9,7 +9,6 @@ use Goyo_Statistics\Utils\Url;
 use Goyo_Statistics\Models\ViewsModel;
 use Goyo_Statistics\Models\VisitorsModel;
 use Goyo_Statistics\Service\Analytics\VisitorProfile;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
 use Goyo_Statistics\Service\Integrations\IntegrationHelper;
 use Goyo_Statistics\Service\Analytics\DeviceDetection\DeviceHelper;
 
@@ -384,8 +383,7 @@ class Visitor
             if ($items->location && $items->location !== 'Unknown') {
                 $location = $items->location;
             } else {
-                $geoLocation = GeolocationFactory::getLocation($ip); // Call once and reuse
-                $location    = $geoLocation['country'];
+                $location = '000';
             }
 
             // Push Country

@@ -5,15 +5,14 @@ namespace Goyo_Statistics\Service\Admin\Metabox;
 use Goyo_Statistics\Abstracts\BaseMetabox;
 use Goyo_Statistics\Service\Admin\Metabox\Metaboxes\DailyTrafficTrend;
 use Goyo_Statistics\Service\Admin\Metabox\Metaboxes\MostVisitedPages;
-use Goyo_Statistics\Service\Admin\Metabox\Metaboxes\TopCities;
 use Goyo_Statistics\Service\Admin\Metabox\Metaboxes\TrafficOverview;
 
 class MetaboxHelper
 {
     public static $metaboxes = [
+        \Goyo_Statistics\Service\Admin\Metabox\Metaboxes\EntryPages::class,
         DailyTrafficTrend::class,
         MostVisitedPages::class,
-        TopCities::class,
         TrafficOverview::class,
     ];
 

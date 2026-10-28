@@ -6,9 +6,6 @@ if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 use Goyo_Statistics\Components\DateRange;
 use Goyo_Statistics\Models\VisitorsModel;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
-use Goyo_Statistics\Service\Geolocation\Provider\DbIpProvider;
-use Goyo_Statistics\Service\Geolocation\Provider\MaxmindGeoIPProvider;
 use Goyo_Statistics\Utils\Request;
 
 /**
@@ -32,11 +29,6 @@ class Ajax
          * List Of Setup Ajax request in WordPress
          */
         $list = [
-            [
-                'class'  => $this,
-                'action' => 'update_geoip_database',
-                'public' => false
-            ],
             [
                 'class'  => $this,
                 'action' => 'admin_meta_box',
@@ -125,25 +117,7 @@ class Ajax
     /**
      * Setup an AJAX action to update geoIP database.
      */
-    public function update_geoip_database_action_callback()
-    {
-        $this->checkAccess('manage');
 
-        $method   = Request::get('geoip_location_detection_method', 'maxmind');
-        $provider = MaxmindGeoIPProvider::class;
-
-        if ('dbip' === $method) {
-            $provider = DbIpProvider::class;
-        }
-
-        $result = GeolocationFactory::downloadDatabase($provider);
-
-        if (is_wp_error($result)) {
-            wp_send_json_error(['message' => $result->get_error_message()]);
-        }
-
-        wp_send_json_success(['message' => esc_html__('GeoIP Database successfully updated.', 'goyo-statistics')]);
-    }
 
     /**
      * Setup Admin Meta box render ajax

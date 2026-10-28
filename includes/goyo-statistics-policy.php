@@ -34,7 +34,7 @@ add_filter('goyo_statistics_admin_menu_list', '__return_empty_array', PHP_INT_MA
 // Only these three dashboard widgets register their display and AJAX handlers.
 add_filter('goyo_statistics_metabox_list', function ($items) {
     $namespace = 'Goyo_Statistics\\Service\\Admin\\Metabox\\Metaboxes\\';
-    return [$namespace . 'TrafficOverview', $namespace . 'DailyTrafficTrend', $namespace . 'MostVisitedPages', $namespace . 'TopCities'];
+    return [$namespace . 'TrafficOverview', $namespace . 'DailyTrafficTrend', $namespace . 'MostVisitedPages', $namespace . 'EntryPages'];
 }, PHP_INT_MAX);
 
 add_filter('plugin_row_meta', function ($links, $file) {
@@ -98,6 +98,8 @@ function goyo_statistics_dashboard_options($options)
         'time_report' => '0',
         'delete_data_on_uninstall' => false,
         'schedule_dbmaint' => false,
+        'geoip' => false,
+        'schedule_geoip' => false,
         'schedule_dbmaint_days' => '0',
     ]);
 }
@@ -110,7 +112,7 @@ add_filter('goyo_statistics_admin_notices', '__return_empty_array', PHP_INT_MAX)
 add_filter('hidden_meta_boxes', function ($hidden, $screen) {
     if ($screen->id !== 'dashboard') return $hidden;
     return array_values(array_diff($hidden, [
-        'goyo-statistics-quickstats-widget', 'goyo-statistics-hits-widget', 'goyo-statistics-pages-widget', 'goyo-statistics-top-cities-widget',
+        'goyo-statistics-quickstats-widget', 'goyo-statistics-hits-widget', 'goyo-statistics-pages-widget', 'goyo-statistics-entry-pages-widget',
     ]));
 }, PHP_INT_MAX, 2);
 
@@ -121,13 +123,15 @@ add_action('admin_enqueue_scripts', function ($hook) {
 
 // Old scheduled retention jobs must not remove data after a reactivation.
 add_action('init', function () {
+    wp_clear_scheduled_hook('goyo_statistics_prepare_city_database');
+    wp_clear_scheduled_hook('goyo_statistics_geoip_hook');
     remove_all_actions('goyo_statistics_dbmaint_hook');
     remove_all_actions('goyo_statistics_dbmaint_visitor_hook');
 }, PHP_INT_MAX);
 
 require_once __DIR__ . '/goyo-statistics-reset.php';
 
-require_once __DIR__ . '/goyo-statistics-geolocation.php';
+
 
 /** Apply the dashboard's initial layout once per user; later edits remain available. */
 function goyo_statistics_dashboard_defaults($user_id)
@@ -135,7 +139,7 @@ function goyo_statistics_dashboard_defaults($user_id)
     if (get_user_meta($user_id, 'goyo_statistics_dashboard_layout_v1', true)) return;
     $widgets = [
         'goyo-statistics-quickstats-widget', 'goyo-statistics-hits-widget',
-        'goyo-statistics-top-cities-widget', 'goyo-statistics-pages-widget',
+        'goyo-statistics-pages-widget',
     ];
     $order = get_user_meta($user_id, 'meta-box-order_dashboard', true);
     $order = is_array($order) ? $order : [];
@@ -144,7 +148,7 @@ function goyo_statistics_dashboard_defaults($user_id)
     }
     foreach ([
         'normal' => ['goyo-statistics-quickstats-widget'],
-        'side' => ['goyo-statistics-hits-widget', 'goyo-statistics-top-cities-widget'],
+        'side' => ['goyo-statistics-hits-widget'],
         'column3' => ['goyo-statistics-pages-widget'],
     ] as $column => $items) {
         $tail = isset($order[$column]) ? array_filter(explode(',', $order[$column])) : [];
@@ -167,4 +171,26 @@ add_action('admin_init', function () {
     if (current_user_can('manage_options')) {
         goyo_statistics_dashboard_defaults(get_current_user_id());
     }
+});
+
+add_filter('get_user_option_meta-box-order_dashboard', function ($order) {
+    $order = is_array($order) ? $order : [];
+    $id = 'goyo-statistics-entry-pages-widget';
+    $placed = false;
+    foreach ($order as $column => $items) {
+        $list = explode(',', (string) $items);
+        foreach ($list as &$item) {
+            if ($item === 'goyo-statistics-top-cities-widget') $item = $id;
+            if ($item === $id) $placed = true;
+        }
+        unset($item);
+        $order[$column] = implode(',', $list);
+    }
+    if (!$placed) {
+        $side = array_filter(explode(',', isset($order['side']) ? $order['side'] : 'goyo-statistics-hits-widget'));
+        $index = array_search('goyo-statistics-hits-widget', $side, true);
+        array_splice($side, $index === false ? count($side) : $index + 1, 0, [$id]);
+        $order['side'] = implode(',', $side);
+    }
+    return $order;
 });

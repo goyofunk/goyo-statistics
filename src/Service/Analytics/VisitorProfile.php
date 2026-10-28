@@ -11,7 +11,6 @@ use GOYO_STATISTICS\Helper;
 use GOYO_STATISTICS\Option;
 use GOYO_STATISTICS\Visitor;
 use Goyo_Statistics\Service\Analytics\DeviceDetection\UserAgent;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
 use Goyo_Statistics\Service\Analytics\Referrals\Referrals;
 use Goyo_Statistics\Service\Analytics\Referrals\SourceDetector;
 
@@ -96,15 +95,8 @@ class VisitorProfile
      */
     public function getLocation($location = null)
     {
-        $locationData = $this->getCachedData('location', function () {
-            return GeolocationFactory::getLocation($this->getIp());
-        });
-
-        if ($location) {
-            return $locationData[$location];
-        }
-
-        return $locationData;
+        $data = ['country' => null, 'country_code' => '000', 'continent' => null, 'region' => null, 'city' => null, 'latitude' => null, 'longitude' => null];
+        return $location ? ($data[$location] ?? null) : $data;
     }
 
     /**

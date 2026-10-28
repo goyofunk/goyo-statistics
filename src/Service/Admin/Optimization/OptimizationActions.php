@@ -12,9 +12,6 @@ use GOYO_STATISTICS\Purge;
 use Goyo_Statistics\Service\Admin\NoticeHandler\Notice;
 use Goyo_Statistics\Service\Database\Managers\SchemaMaintainer;
 use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\BackgroundProcessFactory;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
-use Goyo_Statistics\Service\Geolocation\Provider\DbIpProvider;
-use Goyo_Statistics\Service\Geolocation\Provider\MaxmindGeoIPProvider;
 use Goyo_Statistics\Traits\AjaxUtilityTrait;
 use Goyo_Statistics\Utils\Query;
 use Goyo_Statistics\Utils\Request;
@@ -35,7 +32,6 @@ class OptimizationActions
         Ajax::register('query_params_cleanup', [$this, 'cleanUpQueryParams'], false);
         Ajax::register('event_data_cleanup', [$this, 'cleanUpEventData'], false);
         Ajax::register('handle_historical_setting_form', [$this, 'handleHistoricalSettingForm'], false);
-        Ajax::register('update_country_data', [$this, 'updateCountryData'], false);
         Ajax::register('update_source_channel_data', [$this, 'updateSourceChannelData'], false);
         Ajax::register('hash_ips', [$this, 'hashIps'], false);
         Ajax::register('recheck_schema', [$this, 'recheckSchema'], false);
@@ -268,33 +264,7 @@ class OptimizationActions
     /**
      * Update GeoIP data for visitors with incomplete information.
      */
-    public function updateCountryData()
-    {
-        try {
-            $this->verifyAjaxRequest();
-            $this->checkAdminReferrer(self::NONCE_ACTION, 'goyostats_nonce');
-            $this->checkCapability('manage');
 
-            $providerMap = [
-                'maxmind' => MaxmindGeoIPProvider::class,
-                'dbip'    => DbIpProvider::class
-            ];
-
-            $method   = Option::get('geoip_location_detection_method', 'maxmind');
-            $provider = $providerMap[$method] ?? $providerMap['maxmind'];
-
-            // First download/update the GeoIP database
-            GeolocationFactory::downloadDatabase($provider);
-
-            // Update GeoIP data for visitors with incomplete information
-            BackgroundProcessFactory::getBackgroundProcess('update_unknown_visitor_geoip')->process();
-
-            Ajax::success(esc_html__('GeoIP update started.', 'goyo-statistics'));
-        } catch (Exception $e) {
-            /* translators: %s: string value */
-            Ajax::error(sprintf(esc_html__('GeoIP update failed: %s', 'goyo-statistics'), $e->getMessage()), null, $e->getCode());
-        }
-    }
 
     /**
      * Handles AJAX requests to update the source channel data for visitors.

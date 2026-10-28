@@ -4,11 +4,8 @@ namespace Goyo_Statistics\Service\Admin;
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-use GOYO_STATISTICS\GeoIP;
 use GOYO_STATISTICS\Helper;
 use GOYO_STATISTICS\Option;
-use Goyo_Statistics\Service\Geolocation\GeolocationFactory;
-use Goyo_Statistics\Service\Geolocation\Provider\CloudflareGeolocationProvider;
 
 /**
  * Class SiteHealthInfo
@@ -58,24 +55,7 @@ class SiteHealthInfo
     public function getPluginSettings()
     {
         $userRoleExclusions      = $this->getUserRoleExclusions(false);
-        $geoIpProvider           = GeolocationFactory::getProviderInstance();
-        $geoIpProviderValidity   = $geoIpProvider->validateDatabaseFile();
-        $locationDetectionMethod = Option::get('geoip_location_detection_method', 'maxmind');
-        $isMaxmindLocationMethod = 'maxmind' === $locationDetectionMethod;
-        $requiredHeaderExists    = CloudflareGeolocationProvider::isAvailable();
-        $consentIntegration      = Option::get('consent_integration');
-
-        $currentMethod = [
-            'title' => __('Cloudflare IP Geolocation', 'goyo-statistics'),
-            'debug' => 'Cloudflare IP Geolocation',
-        ];
-
-        if ($locationDetectionMethod) {
-            $currentMethod = [
-                'title' => __('DB-IP Geolocation', 'goyo-statistics'),
-                'debug' => 'DB-IP Geolocation',
-            ];
-        }
+        $consentIntegration = Option::get('consent_integration');
 
         $settings = [
             /**
@@ -102,50 +82,6 @@ class SiteHealthInfo
             'dailySaltDate'                  => [
                 'label' => esc_html__('Daily Salt Date', 'goyo-statistics'),
                 'value' => is_array(get_option('goyo_statistics_daily_salt')) ? get_option('goyo_statistics_daily_salt')['date'] : '',
-            ],
-
-            /**
-             * Geolocation database settings.
-             */
-            'geoipLocationDetectionMethod'   => [
-                'label' => esc_html__('Location Detection Method', 'goyo-statistics'),
-                'value' => $isMaxmindLocationMethod ? __('MaxMind GeoIP', 'goyo-statistics') : $currentMethod['title'],
-                'debug' => $isMaxmindLocationMethod ? 'MaxMind GeoIP' : $currentMethod['debug'],
-            ],
-            'geoIpDatabaseUpdateSource'      => [
-                'label' => esc_html__('Geolocation Database Update Source', 'goyo-statistics'),
-                'value' => Option::get('geoip_license_type') ? Option::get('geoip_license_type') : __('Not Set', 'goyo-statistics'),
-                'debug' => Option::get('geoip_license_type') ? Option::get('geoip_license_type') : 'Not Set',
-            ],
-            'cloudflareRequiredHeaderExists' => [
-                'label' => esc_html__('Cloudflare Required Headers Exists', 'goyo-statistics'),
-                'value' => $requiredHeaderExists ? __('Yes', 'goyo-statistics') : __('No', 'goyo-statistics'),
-                'debug' => $requiredHeaderExists ? 'Yes' : 'No',
-            ],
-            'geoIpDatabaseExists'            => [
-                'label' => esc_html__('GeoIP Database Exists', 'goyo-statistics'),
-                'value' => $geoIpProvider->isDatabaseExist() ? __('Yes', 'goyo-statistics') : __('No', 'goyo-statistics'),
-                'debug' => $geoIpProvider->isDatabaseExist() ? 'Yes' : 'No',
-            ],
-            'geoIpDatabaseLastUpdated'       => [
-                'label' => esc_html__('GeoIP Database Last Updated', 'goyo-statistics'),
-                'value' => $geoIpProvider->getLastDatabaseFileUpdated() ?: esc_html__('Not Set', 'goyo-statistics'),
-                'debug' => $geoIpProvider->getLastDatabaseFileUpdated() ?: 'Not Set',
-            ],
-            'geoIpDatabaseSize'              => [
-                'label' => esc_html__('GeoIP Database Size', 'goyo-statistics'),
-                'value' => $geoIpProvider->getDatabaseSize() ?? esc_html__('Not Set', 'goyo-statistics'),
-                'debug' => $geoIpProvider->isDatabaseExist() ? number_format($geoIpProvider->getDatabaseSize(false) / 1048576, 2) . ' MB': 'Not Set',
-            ],
-            'geoIpDatabaseType'              => [
-                'label' => esc_html__('GeoIP Database Type', 'goyo-statistics'),
-                'value' => $geoIpProvider->getDatabaseType() ?: esc_html__('Not Set', 'goyo-statistics'),
-                'debug' => $geoIpProvider->getDatabaseType() ?: 'Not Set',
-            ],
-            'geoIpDatabaseValidation'        => [
-                'label' => esc_html__('GeoIP Database Validation', 'goyo-statistics'),
-                'value' => is_wp_error($geoIpProviderValidity) ? esc_html__('No', 'goyo-statistics') : esc_html__('Yes', 'goyo-statistics'),
-                'debug' => is_wp_error($geoIpProviderValidity) ? $geoIpProviderValidity->get_error_message() : 'Yes',
             ],
 
             /**

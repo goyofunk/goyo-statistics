@@ -9,7 +9,6 @@ use GOYO_STATISTICS\Admin_Assets;
 use GOYO_STATISTICS\Menus;
 use Goyo_Statistics\Service\Admin\NoticeHandler\Notice;
 use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\Jobs\CalculatePostWordsCount;
-use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\Jobs\IncompleteGeoIpUpdater;
 use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\Jobs\SourceChannelUpdater;
 use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\Jobs\SummaryTotalsDataMigration;
 use Goyo_Statistics\Service\Database\Migrations\BackgroundProcess\Jobs\VisitorColumnsMigrator;
@@ -74,7 +73,6 @@ class BackgroundProcessManager extends BaseMigrationManager
     private $coreBackgroundProcesses = [
         'visitor_columns_migrator'       => VisitorColumnsMigrator::class,
         'calculate_post_words_count'     => CalculatePostWordsCount::class,
-        'update_unknown_visitor_geoip'   => IncompleteGeoIpUpdater::class,
         'update_visitors_source_channel' => SourceChannelUpdater::class,
         'summary_totals_data_migration'  => SummaryTotalsDataMigration::class,
     ];
