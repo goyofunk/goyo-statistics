@@ -11,13 +11,12 @@
 - 별도 설정 없이 활성화 후 새 방문부터 수집합니다.
 - 사용 환경: WordPress 6.6 이상, PHP 7.4 이상
 
+## 소개
+
 ![Goyo Statistics 알림판 통계 위젯](.github/goyostatics_th.png)
 
 - 플러그인: Goyo Statistics
-- 설명: 알림판용 간단 통계
-- 버전: 1.01
-- 작성자: 고용펑크
-- 기본 언어: 한국어 
+- 설명: 알림판용 간단 통계 (버전: 1.01)
 - 알림판에서 간단하고 가볍게 사용하기 위한 독립된 데이터·설정·방문 수집
-- WP Statistics 코드 일부 차용, 두 개의 플러그인 동시 활성화 사용 가능 
-- WP Statistics 개발자 후원: https://wp-statistics.com/donate/
+- WP Statistics 코드 일부 차용, 두 개의 통계 플러그인 동시 활성화 가능 
+- 기본 언어: 한국어 
