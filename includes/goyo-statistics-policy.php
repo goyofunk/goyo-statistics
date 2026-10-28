@@ -128,3 +128,43 @@ add_action('init', function () {
 require_once __DIR__ . '/goyo-statistics-reset.php';
 
 require_once __DIR__ . '/goyo-statistics-geolocation.php';
+
+/** Apply the dashboard's initial layout once per user; later edits remain available. */
+function goyo_statistics_dashboard_defaults($user_id)
+{
+    if (get_user_meta($user_id, 'goyo_statistics_dashboard_layout_v1', true)) return;
+    $widgets = [
+        'goyo-statistics-quickstats-widget', 'goyo-statistics-hits-widget',
+        'goyo-statistics-top-cities-widget', 'goyo-statistics-pages-widget',
+    ];
+    $order = get_user_meta($user_id, 'meta-box-order_dashboard', true);
+    $order = is_array($order) ? $order : [];
+    foreach ($order as $column => $items) {
+        $order[$column] = implode(',', array_values(array_diff(explode(',', (string) $items), $widgets)));
+    }
+    foreach ([
+        'normal' => ['goyo-statistics-quickstats-widget'],
+        'side' => ['goyo-statistics-hits-widget', 'goyo-statistics-top-cities-widget'],
+        'column3' => ['goyo-statistics-pages-widget'],
+    ] as $column => $items) {
+        $tail = isset($order[$column]) ? array_filter(explode(',', $order[$column])) : [];
+        $order[$column] = implode(',', array_merge($items, $tail));
+    }
+    update_user_meta($user_id, 'meta-box-order_dashboard', $order);
+    update_user_option($user_id, 'screen_layout_dashboard', 3, true);
+    $hidden = get_user_meta($user_id, 'metaboxhidden_dashboard', true);
+    $hidden = is_array($hidden) ? $hidden : [];
+    $hidden = array_values(array_diff($hidden, $widgets));
+    $hidden[] = 'goyobase_site_stats_links';
+    update_user_meta($user_id, 'metaboxhidden_dashboard', array_values(array_unique($hidden)));
+    $closed = get_user_meta($user_id, 'closedpostboxes_dashboard', true);
+    if (is_array($closed)) {
+        update_user_meta($user_id, 'closedpostboxes_dashboard', array_values(array_diff($closed, $widgets)));
+    }
+    update_user_meta($user_id, 'goyo_statistics_dashboard_layout_v1', 1);
+}
+add_action('admin_init', function () {
+    if (current_user_can('manage_options')) {
+        goyo_statistics_dashboard_defaults(get_current_user_id());
+    }
+});
