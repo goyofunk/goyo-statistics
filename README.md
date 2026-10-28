@@ -1,6 +1,6 @@
 # Goyo Statistics
 
-![Goyo Statistics 알림판 통계 위젯](goyostatics_th.png)
+![Goyo Statistics 알림판 통계 위젯](.github/goyostatics_th.png)
 
 - 플러그인: Goyo Statistics
 - 설명: 알림판용 간단 통계
