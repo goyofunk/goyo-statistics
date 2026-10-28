@@ -131,5 +131,5 @@ $chartData = $data['summary']['7days']['data'];
     <?php if (current_user_can('manage_options')) : ?>
         <a class="button button-small" href="<?php echo esc_url(wp_nonce_url(admin_url('admin-post.php?action=goyo_statistics_reset'), 'goyo_statistics_reset')); ?>">통계초기화</a>
     <?php endif; ?>
-    <p class="goyo-statistics-donate-note">WP Statistics 코드를 차용하였으며, 무료로 이 기능을 제공해준 개발자에게 후원 링크(Donate link)는 다음과 같습니다. <a href="https://wp-statistics.com/donate/" target="_blank" rel="noopener noreferrer">https://wp-statistics.com/donate/</a></p>
+    <p class="goyo-statistics-donate-note">WP Statistics 코드를 차용, 무료로 이 기능을 제공해준 개발자에게 <a href="https://wp-statistics.com/donate/" target="_blank" rel="noopener noreferrer">후원하기</a></p>
 </div>
