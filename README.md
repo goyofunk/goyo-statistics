@@ -1,4 +1,4 @@
-# Goyo Statistics
+# Goyo Statistics Wordpress Plugin
 
 ## 설치 방법
 
