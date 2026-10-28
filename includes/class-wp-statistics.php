@@ -28,7 +28,6 @@ use Goyo_Statistics\Service\CronEventManager;
 use Goyo_Statistics\Service\Database\Migrations\Queue\QueueManager as DatabaseMigrationQueueManager;
 use Goyo_Statistics\Service\Integrations\IntegrationsManager;
 use Goyo_Statistics\Service\CustomEvent\CustomEventManager;
-use Goyo_Statistics\Service\Admin\ExportImport\ExportImportManager;
 use Goyo_Statistics\CLI\CliCommands;
 use Goyo_Statistics\Service\Admin\Optimization\OptimizationManager;
 use Goyo_Statistics\Globals\AjaxManager;
@@ -169,7 +168,6 @@ final class Goyo_Statistics
         $referrals                  = new ReferralsManager();
         $userOnline                 = new \GOYO_STATISTICS\UserOnline();
         $anonymizedUsageDataManager = new AnonymizedUsageDataManager();
-        $exportImportManager        = new ExportImportManager();
 
         CoreFactory::updater();
 
@@ -185,7 +183,6 @@ final class Goyo_Statistics
             require_once GOYO_STATISTICS_DIR . 'includes/class-wp-statistics-install.php';
             require_once GOYO_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-ajax.php';
             require_once GOYO_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-dashboard.php';
-            require_once GOYO_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-export.php';
 
             require_once GOYO_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-assets.php';
             require_once GOYO_STATISTICS_DIR . 'includes/admin/class-wp-statistics-admin-user.php';

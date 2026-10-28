@@ -126,3 +126,5 @@ add_action('init', function () {
 }, PHP_INT_MAX);
 
 require_once __DIR__ . '/goyo-statistics-reset.php';
+
+require_once __DIR__ . '/goyo-statistics-geolocation.php';

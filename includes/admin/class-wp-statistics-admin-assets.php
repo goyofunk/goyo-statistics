@@ -144,7 +144,7 @@ class Admin_Assets
      */
     public function admin_styles()
     {
-        if (!User::hasPageAccess()) {
+        if (!User::hasPageAccess() || Helper::get_screen_id() !== 'dashboard') {
             return;
         }
 
@@ -156,28 +156,22 @@ class Admin_Assets
 
         // Load Rtl Version Css
         if (is_rtl()) {
-            wp_enqueue_style(self::$prefix . '-rtl', self::url('rtl.min.css'), array(), self::version());
+            wp_enqueue_style(self::$prefix . '-rtl', self::url('rtl.min.css'), array(), self::version() . '.' . filemtime(GOYO_STATISTICS_DIR . 'assets/css/rtl.min.css'));
         }
 
-        //Load Jquery VMap Css
-        if (Menus::in_page('overview') || Menus::in_page('pages') || Menus::in_page('geographic') || Menus::in_page('visitors') || (in_array($screen_id, array('dashboard')) and !Option::get('disable_dashboard'))) {
-            wp_enqueue_style(self::$prefix . '-jqvmap', self::url('jqvmap/jqvmap.min.css'), array(), '1.5.1');
-        }
+        
 
         // Load Jquery-ui theme
         //        if (Menus::in_plugin_page() and Menus::in_page('optimization') === false and Menus::in_page('settings') === false) {
         //            wp_enqueue_style(self::$prefix . '-jquery-datepicker', self::url('datepicker.min.css'), array(), '1.11.4');
         //        }
 
-        // Load Select2
-        if (Menus::in_page('visitors') || Menus::in_page('referrals') || Menus::in_page('link_tracker') || Menus::in_page('download_tracker') || Menus::in_page('pages') || Menus::in_page('settings') || Menus::in_page('optimization') || Menus::in_page('goals')) {
-            wp_enqueue_style(self::$prefix . '-select2', self::url('select2/select2.min.css'), array(), '4.0.9');
-        }
+        
 
         // Load RangeDatePicker
         if (Menus::in_plugin_page() || Menus::in_page('pages') || in_array($screen_id, array('dashboard'))) {
-            wp_enqueue_style(self::$prefix . '-daterangepicker', self::url('datepicker/daterangepicker.css'), array(), '1.0.1');
-            wp_enqueue_style(self::$prefix . '-customize', self::url('datepicker/customize.css'), array(), '1.0.0');
+            wp_enqueue_style(self::$prefix . '-daterangepicker', self::url('datepicker/daterangepicker.css'), array(), '1.0.1.' . filemtime(GOYO_STATISTICS_DIR . 'assets/css/datepicker/daterangepicker.css'));
+            wp_enqueue_style(self::$prefix . '-customize', self::url('datepicker/customize.css'), array(), '1.0.0.' . filemtime(GOYO_STATISTICS_DIR . 'assets/css/datepicker/customize.css'));
         }
     }
 
@@ -188,7 +182,7 @@ class Admin_Assets
      */
     public function admin_scripts($hook)
     {
-        if (!User::hasPageAccess()) {
+        if (!User::hasPageAccess() || Helper::get_screen_id() !== 'dashboard') {
             return;
         }
 
@@ -204,7 +198,7 @@ class Admin_Assets
 
         // Load Chart.js library
         if (apply_filters('goyo_statistics_enqueue_chartjs', false)) {
-            Assets::script('chart.js', 'js/chartjs/chart.umd.min.js', [], [], true, false, null, '4.4.4');
+            Assets::script('chart.js', 'js/chartjs/chart.umd.min.js', [], [], true, false, null, '4.4.4.goyo.' . filemtime(GOYO_STATISTICS_DIR . 'assets/js/chartjs/chart.umd.min.js'));
         }
 
         // Load mini-chart
@@ -216,11 +210,7 @@ class Admin_Assets
             wp_enqueue_script(self::$prefix . '-chart-matrix.js', self::url('chartjs/chart-matrix.min.js'), [], '2.0.8', true);
         }
 
-        // Load Jquery VMap Js Library
-        if (Menus::in_page('overview') || Menus::in_page('pages') || Menus::in_page('geographic') || Menus::in_page('visitors') || (in_array($screen_id, array('dashboard')) and !Option::get('disable_dashboard'))) {
-            wp_enqueue_script(self::$prefix . '-jqvmap', self::url('jqvmap/jquery.vmap.min.js'), array('jquery'), "1.5.1", ['in_footer' => true]);
-            wp_enqueue_script(self::$prefix . '-jqvmap-world', self::url('jqvmap/jquery.vmap.world.min.js'), array('jquery'), "1.5.1", ['in_footer' => true]);
-        }
+        
 
 
         // Load Jquery UI
@@ -229,10 +219,7 @@ class Admin_Assets
         //            wp_localize_script('jquery-ui-datepicker', 'goyostats_i18n_jquery_datepicker', self::localize_jquery_datepicker());
         //        }
 
-        // Load Select2
-        if (Menus::in_page('visitors') || Menus::in_page('referrals') || Menus::in_page('link_tracker') || Menus::in_page('download_tracker') || Menus::in_page('pages') || Menus::in_page('settings') || Menus::in_page('optimization') || Menus::in_page('goals')) {
-            wp_enqueue_script(self::$prefix . '-select2', self::url('select2/select2.full.min.js'), array('jquery'), "4.1.0", ['in_footer' => true]);
-        }
+        
 
         // Load WordPress PostBox Script
         if (Menus::in_plugin_page() and Menus::in_page('optimization') === false and Menus::in_page('settings') === false) {
@@ -252,7 +239,7 @@ class Admin_Assets
             (in_array($hook, ['post.php', 'edit.php']) && !Option::get('disable_editor')) ||
             (in_array($hook, ['post.php', 'edit.php']) && Helper::isAddOnActive('data-plus') && Option::getByAddon('latest_visitors_metabox', 'data_plus', '1') === '1')
         ) {
-            wp_enqueue_script(self::$prefix, self::url('admin.min.js'), array('jquery'), self::version() . '.' . filemtime(GOYO_STATISTICS_DIR . 'assets/js/admin.min.js'), ['in_footer' => true]);
+            wp_enqueue_script(self::$prefix, self::url('admin.min.js'), array('jquery', apply_filters('goyo_statistics_assets_handle', 'goyo-statistics-chart.js')), self::version() . '.' . filemtime(GOYO_STATISTICS_DIR . 'assets/js/admin.min.js'), ['in_footer' => true]);
             wp_localize_script(self::$prefix, 'goyostats_global', self::goyostats_global($hook));
         }
 
@@ -265,7 +252,7 @@ class Admin_Assets
         // Add RangeDatePicker (moment is shipped by WordPress core; daterangepicker depends on it)
         if (Menus::in_plugin_page() || Menus::in_page('pages') || in_array($screen_id, array('dashboard'))) {
             wp_enqueue_script('moment');
-            wp_enqueue_script(self::$prefix . '-daterangepicker', self::url('datepicker/daterangepicker.min.js'), array('moment'), "1.13.2", ['in_footer' => true]);
+            wp_enqueue_script(self::$prefix . '-daterangepicker', self::url('datepicker/daterangepicker.min.js'), array('jquery', 'moment'), "1.13.2." . filemtime(GOYO_STATISTICS_DIR . 'assets/js/datepicker/daterangepicker.min.js'), ['in_footer' => true]);
         }
 
         if (Menus::in_page('pages')) {

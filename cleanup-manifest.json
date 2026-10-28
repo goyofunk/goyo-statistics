@@ -3871,5 +3871,56 @@
       "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\views\\components\\modals",
       "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\views\\components\\privacy-audit"
     ]
+  },
+  "audit_2026_10_28": {
+    "modified_files": [
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\admin.min.js",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\chartjs\\chart.umd.min.js",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\admin.min.css",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\admin\\class-wp-statistics-admin-assets.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\class-wp-statistics.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\goyo-statistics-policy.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Geolocation\\Provider\\MaxmindGeoIPProvider.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\Metabox\\Metaboxes\\TopCities.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\views\\components\\objects\\chart-time-range.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\rtl.min.css",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\datepicker\\daterangepicker.css",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\datepicker\\customize.css",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\datepicker\\daterangepicker.min.js",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\cleanup-manifest.json"
+    ],
+    "created_files": [
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\goyo-statistics-geolocation.php"
+    ],
+    "deleted_files": [
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\jqvmap\\jqvmap.min.css",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\jqvmap\\jquery.vmap.min.js",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\jqvmap\\jquery.vmap.world.min.js",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\admin\\class-wp-statistics-admin-export.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\includes\\libraries\\ExportData.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\ExportImportHandler.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\ExportImportManager.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\ExportRestController.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\ImportRestController.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Interfaces\\ExportDriverInterface.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Interfaces\\ImportDriverInterface.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Reports\\ReportsExportDataTransformer.php",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Reports\\ReportsExportHandler.php"
+    ],
+    "deleted_empty_directories": [
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\css\\jqvmap",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\assets\\js\\jqvmap",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Interfaces",
+      "C:\\xampp\\htdocs\\goyominimal\\wp-content\\plugins\\goyo-statistics\\src\\Service\\Admin\\ExportImport\\Reports"
+    ],
+    "tests": [
+      "PHP 543 files and JS 13 files syntax passed",
+      "Fresh defaults and seven empty tables; four widget responses passed",
+      "Deactivated, Goyo alone, WP alone, both, Goyo reactivated passed",
+      "Browser: both plugins chart rendering and independent date filter passed",
+      "GeoIP real download and city lookup passed; test database removed",
+      "GeoIP mocked failure: retry after 3600 seconds and lock release passed"
+    ],
+    "css_removed_rules": 667
   }
 }

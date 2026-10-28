@@ -41,6 +41,13 @@ class TopCities extends BaseMetabox
         $model = new VisitorsModel();
         $data = $model->getVisitorsGeoData($args);
 
+        if (empty($data) && function_exists('goyo_statistics_geoip_message')) {
+            $message = goyo_statistics_geoip_message();
+            if ($message !== '') {
+                return '<div class="o-wrap o-wrap--no-data goyostats-center">' . esc_html($message) . '</div>';
+            }
+        }
+
         return View::load('components/tables/geographic-top-cities', [
             'data' => $data,
             'dashboard_widget' => true,
