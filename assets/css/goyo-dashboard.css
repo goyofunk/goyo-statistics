@@ -1,0 +1,17 @@
+#goyo-statistics-quickstats-widget .goyostats-overview-btn { display: none; }
+#goyo-statistics-quickstats-widget:not(.closed),
+#goyo-statistics-pages-widget:not(.closed),
+#goyo-statistics-hits-widget:not(.closed),
+#goyo-statistics-top-cities-widget:not(.closed) { display: flex; flex-direction: column; box-sizing: border-box; height: 800px; }
+#goyo-statistics-top-cities-widget:not(.closed) { height: 400px; }
+#goyo-statistics-hits-widget:not(.closed) { height: 380px; }
+#goyo-statistics-quickstats-widget > .postbox-header,
+#goyo-statistics-pages-widget > .postbox-header,
+#goyo-statistics-hits-widget > .postbox-header,
+#goyo-statistics-top-cities-widget > .postbox-header { flex: 0 0 auto; }
+#goyo-statistics-quickstats-widget > .inside,
+#goyo-statistics-pages-widget > .inside,
+#goyo-statistics-hits-widget > .inside,
+#goyo-statistics-top-cities-widget > .inside { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin-bottom: 0; }
+#goyo-statistics-quickstats-widget .goyo-statistics-dashboard-footer { padding: 12px 0; }
+#goyo-statistics-quickstats-widget .goyo-statistics-donate-note { font-size: 11px; line-height: 1.6; color: #646970; margin: 8px 0 0; overflow-wrap: anywhere; }

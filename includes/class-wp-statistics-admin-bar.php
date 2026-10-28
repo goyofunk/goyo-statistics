@@ -1,0 +1,221 @@
+<?php
+
+namespace GOYO_STATISTICS;
+
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
+use WP_Admin_Bar;
+use Goyo_Statistics\Models\HistoricalModel;
+use Goyo_Statistics\Models\ViewsModel;
+
+class AdminBar
+{
+    /**
+     * AdminBar constructor.
+     */
+    public function __construct()
+    {
+
+        # Show WordPress Admin Bar
+        add_action('admin_bar_menu', array($this, 'admin_bar'), 69);
+    }
+
+    /**
+     * Check Show WP Statistics Admin Bar
+     *
+     * @deprecated 14.9 Use Helper::isAdminBarShowing() instead
+     */
+    public static function show_admin_bar()
+    {
+        return Helper::isAdminBarShowing();
+    }
+
+    /**
+     * Show WordPress Admin Bar
+     * @param WP_Admin_Bar $wp_admin_bar
+     */
+    public function admin_bar($wp_admin_bar)
+    {
+        // Check Show WordPress Admin Bar
+        if (Helper::isAdminBarShowing()) {
+
+            $menu_title = '<span class="ab-icon"></span>';
+            $object_id  = get_queried_object_ID();
+
+            $view_type  = false;
+            $view_title = false;
+            $footerText = __('Explore Details', 'goyo-statistics');
+            $footerLink = esc_url(admin_url('admin.php?page=goyostats_overview_page'));
+
+            if ((is_single() || is_page() || is_front_page()) && !empty($object_id)) {
+
+                $view_type  = get_post_type($object_id);
+                $view_title = __('Page Views', 'goyo-statistics');
+                $footerText = __('View Page Performance', 'goyo-statistics');
+                $footerLink = esc_url(Menus::admin_url('content-analytics', ['type' => 'single', 'post_id' => $object_id]));
+
+            } elseif (is_category()) {
+
+                $view_type  = 'category';
+                $view_title = __('Category Views', 'goyo-statistics');
+                $footerText = __('View Category Performance', 'goyo-statistics');
+                $footerLink = esc_url(Menus::admin_url('category-analytics', ['type' => 'single', 'term_id' => $object_id]));
+
+            } elseif (is_tag()) {
+
+                $view_type  = 'post_tag';
+                $view_title = __('Tag Views', 'goyo-statistics');
+                $footerText = __('View Tag Performance', 'goyo-statistics');
+                $footerLink = esc_url(Menus::admin_url('category-analytics', ['type' => 'single', 'term_id' => $object_id]));
+
+            } elseif (is_tax()) {
+                $term       = get_queried_object();
+                $view_type  = 'tax_' . $term->taxonomy;
+                $view_title = __('Taxonomy Views', 'goyo-statistics');
+                $footerText = __('View Taxonomy Performance', 'goyo-statistics');
+                $footerLink = esc_url(Menus::admin_url('category-analytics', ['type' => 'single', 'term_id' => $object_id]));
+
+            } elseif (is_author()) {
+
+                $view_type  = 'author';
+                $view_title = __('Author Views', 'goyo-statistics');
+                $footerText = __('View Author Performance', 'goyo-statistics');
+                $footerLink = esc_url(Menus::admin_url('author-analytics', ['type' => 'single-author', 'author_id' => $object_id]));
+
+            } else {
+
+                $view_title = __('Total Website Views', 'goyo-statistics');
+                $hit_number = number_format_i18n(goyo_statistics_visit('total'));
+
+            }
+
+            if (!Helper::isAddOnActive('mini-chart') && $view_type && $view_title) {
+                $pageLink   = '';
+                $term       = get_term($object_id);
+                $taxonomies = ['category', 'post_tag'];
+
+                if (!empty($term) && !is_wp_error($term)) {
+                    $taxonomies[] = "tax_$term->taxonomy";
+                }
+
+                if (in_array($view_type, $taxonomies)) {
+                    $pageLink = get_term_link(intval($term->term_id), $term->taxonomy);
+                    $pageLink = !is_wp_error($pageLink) ? $pageLink : '';
+                } else {
+                    $pageLink = get_permalink($object_id);
+                }
+                $pageLink = wp_make_link_relative($pageLink);
+
+                $viewsModel = new ViewsModel();
+                $hit_number = $viewsModel->countViewsFromPagesOnly([
+                    'post_id'       => $object_id,
+                    'resource_type' => $view_type,
+                    'uri'           => $pageLink,
+                ]);
+
+                $menu_title .= sprintf('%s: %s', $view_title, number_format($hit_number));
+                $menu_title .= ' - ';
+            }
+
+            $onlineUsers = goyo_statistics_useronline();
+            $menu_title .= sprintf('Online: %s', number_format($onlineUsers));
+
+            // Reuse this render's metrics in both the menu and add-on data.
+            $todayVisitors = goyo_statistics_visitor('today');
+            $yesterdayVisitors = goyo_statistics_visitor('yesterday');
+            $todayVisits = goyo_statistics_visit('today');
+            $yesterdayVisits = goyo_statistics_visit('yesterday');
+
+            /**
+             * List Of Admin Bar WordPress
+             *
+             * --- Array Arg ---
+             * Key : ID of Admin bar
+             */
+            $admin_bar_list = array(
+                'wp-statistic-menu'                   => [
+                    'title' => $menu_title,
+                    'href'  => Menus::admin_url('overview'),
+                ],
+                'wp-statistic-menu-global-data'       => [
+                    'parent' => 'wp-statistic-menu',
+                    'title'  => __('Global Data', 'goyo-statistics'),
+                    'meta'   => array('class' => 'goyo-statistics-global-data'),
+                ],
+                'wp-statistic-menu-current-page-data' => [
+                    'parent' => 'wp-statistic-menu',
+                    'title'  => __('Current Page Data', 'goyo-statistics'),
+                    'meta'   => array('class' => 'goyo-statistics-current-page-data disabled'),
+                ],
+                'goyo-statistics-menu-visitors-today'   => array(
+                    'parent' => 'wp-statistic-menu-global-data',
+                    'title'  => '<div class="goyo-statistics-menu-visitors-today__title">' . __('Visitors Today', 'goyo-statistics') . '</div>'
+                        . '<div class="goyo-statistics-menu-visitors-today__count">' . $todayVisitors . '</div>'
+                        /* translators: %s: string value */
+                        . '<div class="goyo-statistics-menu-todayvisits">' . sprintf(__('was %s last day', 'goyo-statistics'), $yesterdayVisitors) . '</div>'
+                ),
+                'goyo-statistics-menu-views-today'      => array(
+                    'parent' => 'wp-statistic-menu-global-data',
+                    'title'  => '<div class="goyo-statistics-menu-views-today__title">' . __('Views Today', 'goyo-statistics') . '</div>'
+                        . '<div class="goyo-statistics-menu-views-today__count">' . $todayVisits . '</div>'
+                        /* translators: %s: string value */
+                        . '<div class="goyo-statistics-menu-yesterdayvisits">' . sprintf(__('was %s last day', 'goyo-statistics'), $yesterdayVisits) . '</div>'
+
+                ),
+                'goyo-statistics-menu-page'             => array(
+                    'parent' => 'wp-statistic-menu-global-data',
+                    'title'  => sprintf('<img src="%s" alt="%s"/><div><span class="goyostats-admin-bar__chart__unlock-button">%s</span><button>%s</button></div>',
+                        esc_url(GOYO_STATISTICS_URL . 'assets/images/mini-chart-lock.png'),
+                        __('Unlock the Full Power of WP Statistics', 'goyo-statistics'),
+                        __('Unlock the Full Power of WP Statistics', 'goyo-statistics'),
+                        __('Learn More', 'goyo-statistics')
+                    ),
+                    'href'   =>  esc_url(admin_url('admin.php?page=goyostats_plugins_page&type=locked-mini-chart')),
+                    'meta'   => [
+                        'target' => '_blank',
+                    ],
+                ),
+                'goyo-statistics-footer-page'           => array(
+                    'parent' => 'wp-statistic-menu-global-data',
+                    'title'  => sprintf('<img src="%s" alt="%s"/>
+                        <a href="%s" target="_blank">
+                        <span class="goyostats-admin-bar__chart__unlock-button">%s</span>
+                        </a>'
+                        ,
+                        esc_url(GOYO_STATISTICS_URL . 'assets/images/mini-chart-logo.svg'),
+                        esc_attr__('Mini Chart Logo', 'goyo-statistics'),
+                        esc_url($footerLink),
+                        __('Explore Details', 'goyo-statistics')
+                    ),
+
+                )
+            );
+
+            $data = [
+                'object_id'          => $object_id,
+                'view_type'          => $view_type,
+                'view_title'         => $view_title,
+                'hit_number'         => isset($hit_number) ? intval($hit_number) : 0,
+                'footer_text'        => $footerText,
+                'footer_link'        => $footerLink,
+                'menu_href'          => Menus::admin_url('overview'),
+                'today_visits'       => number_format($todayVisits),
+                'today_visitors'     => number_format($todayVisitors),
+                'yesterday_visits'   => number_format($yesterdayVisits),
+                'yesterday_visitors' => number_format($yesterdayVisitors),
+                'online_users'       => number_format($onlineUsers),
+            ];
+
+            /**
+             * WP Statistics Admin Bar List
+             */
+            $admin_bar_list = apply_filters('goyo_statistics_admin_bar', $admin_bar_list, $data, '');
+
+            foreach ($admin_bar_list as $id => $v_admin_bar) {
+                $wp_admin_bar->add_menu(array_merge(array('id' => $id), $v_admin_bar));
+            }
+        }
+    }
+}
+
+new AdminBar;

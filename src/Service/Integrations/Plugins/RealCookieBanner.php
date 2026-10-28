@@ -1,0 +1,91 @@
+<?php
+
+namespace Goyo_Statistics\Service\Integrations\Plugins;
+
+if (!defined('ABSPATH')) exit; // Exit if accessed directly
+
+use GOYO_STATISTICS\Option;
+
+class RealCookieBanner extends AbstractIntegration
+{
+    protected $key = 'real_cookie_banner';
+    protected $path = 'real-cookie-banner-pro/index.php';
+
+    /**
+     * Returns the name of the integration.
+     *
+     * @return  string
+     */
+    public function getName()
+    {
+        return esc_html__('Real Cookie Banner PRO', 'goyo-statistics');
+    }
+
+    public function register()
+    {
+        add_action('goyo_statistics_save_settings', [$this, 'clearTemplateCache']);
+        add_action('RCB/Templates/TechnicalHandlingIntegration', [$this, 'handleIntegration']);
+    }
+
+    public function clearTemplateCache()
+    {
+        if (function_exists('wp_rcb_invalidate_templates_cache')) {
+            wp_rcb_invalidate_templates_cache();
+        }
+    }
+
+    public function trackAnonymously()
+    {
+        if (!function_exists('wp_rcb_consent_given')) {
+            return false;
+        }
+
+        $baseConsent            = wp_rcb_consent_given('goyo-statistics');
+        $dataProcessingConsent  = wp_rcb_consent_given('goyo-statistics-with-data-processing');
+
+        $baseConsent            = $baseConsent['cookieOptIn'];
+        $dataProcessingConsent  = $dataProcessingConsent['cookieOptIn'];
+
+        return $baseConsent && !$dataProcessingConsent;
+    }
+
+    public function hasConsent()
+    {
+        if (!function_exists('wp_rcb_consent_given')) {
+            return true;
+        }
+
+        $baseConsent            = wp_rcb_consent_given('goyo-statistics');
+        $dataProcessingConsent  = wp_rcb_consent_given('goyo-statistics-with-data-processing');
+
+        $baseConsent            = $baseConsent['cookieOptIn'];
+        $dataProcessingConsent  = $dataProcessingConsent['cookieOptIn'];
+
+        return $baseConsent || $dataProcessingConsent;
+    }
+
+    public function handleIntegration($integration)
+    {
+        $options        = Option::getOptions();
+        $defaultOptions = Option::defaultOption();
+        $hashIps        = boolval($options['hash_ips'] ?? $defaultOptions['hash_ips']);
+        $file           = constant('GOYO_STATISTICS_MAIN_FILE');
+
+        $integration->integrate($file, 'goyo-statistics');
+
+        if (!$hashIps) {
+            $integration->integrate($file, 'goyo-statistics-with-data-processing');
+        }
+    }
+
+    /**
+     * Return an array of js handles for this integration.
+     * The result will be used as dependencies for the tracker js file
+     *
+     * @return  array
+     */
+    public function getJsHandles()
+    {
+        return ['real-cookie-banner-pro-banner'];
+    }
+}
