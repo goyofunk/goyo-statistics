@@ -2,19 +2,8 @@
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
-use GOYO_STATISTICS\Menus;
 use GOYO_STATISTICS\Pages;
-use Goyo_Statistics\Utils\Request;
 use Goyo_Statistics\Components\View;
-
-$page = Request::get('current_page', [], 'array');
-$page = $page['file'] ?? '';
-
-if (strpos($page, 'overview') !== false) {
-    $viewTitle = esc_html__('View Content', 'goyo-statistics');
-} else {
-    $viewTitle = esc_html__('View', 'goyo-statistics');
-}
 ?>
 <?php if (!empty($data)) : ?>
     <div class="o-table-wrapper">
@@ -23,9 +12,6 @@ if (strpos($page, 'overview') !== false) {
             <tr>
                 <th scope="col" class="goyostats-pd-l"><?php esc_html_e('Page', 'goyo-statistics'); ?></th>
                 <th scope="col" class="goyostats-pd-l"><span class="goyostats-order"><?php esc_html_e('Views', 'goyo-statistics'); ?></span></th>
-                <th class="goyostats-pd-l" scope="col">
-                    <span class="screen-reader-text"><?php esc_html_e('View content', 'goyo-statistics'); ?></span>
-                </th>
             </tr>
             </thead>
 
@@ -44,9 +30,6 @@ if (strpos($page, 'overview') !== false) {
                         <span><?php echo esc_html(number_format_i18n($item->views)) ?></span>
                     </td>
 
-                    <td class="goyostats-pd-l goyostats-middle-vertical">
-                        <a target="_blank" class="goyostats-view-content" href="<?php echo esc_url($page['link']) ?>"><?php echo esc_html($viewTitle); ?></a>
-                    </td>
                 </tr>
             <?php endforeach; ?>
             </tbody>

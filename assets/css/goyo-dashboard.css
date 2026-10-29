@@ -1,4 +1,6 @@
 #goyo-statistics-quickstats-widget .goyostats-overview-btn { display: none; }
+#goyo-statistics-entry-pages-widget .goyostats-table-inspect tbody tr td:first-child a::after,
+#goyo-statistics-pages-widget .goyostats-table-inspect tbody tr td:first-child a::after { content: none; display: none; }
 #goyo-statistics-quickstats-widget:not(.closed),
 #goyo-statistics-pages-widget:not(.closed),
 #goyo-statistics-entry-pages-widget:not(.closed),
